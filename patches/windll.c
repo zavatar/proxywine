@@ -7,6 +7,8 @@ __declspec(dllexport) void __cdecl windll(void)
 	QueryPerformanceFrequency(&frequency);
 	QueryPerformanceCounter(&t1);
 
+	printf("windll start\n");
+
 	Sleep(500);
 
 	QueryPerformanceCounter(&t2);
