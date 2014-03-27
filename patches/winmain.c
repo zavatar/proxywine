@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <ucontext.h>
 #include <setjmp.h>
 #include <windows.h>
 
@@ -8,11 +9,12 @@ void (*__longjmp)(jmp_buf, int);
 
 int main(int argc, char* argv[])
 {
-    HMODULE h;
-    FILE* fp;
+    HMODULE h = NULL;
+    FILE* fp = NULL;
     jmp_buf env;
     int i;
     char* buf;
+    ucontext_t context;
 
     h = LoadLibrary("windll.dll");
     if (h != NULL) {
@@ -31,6 +33,12 @@ int main(int argc, char* argv[])
         if (fp != NULL)
             fprintf(fp, "%p\n", pFunc);
         fclose(fp);
+
+        fp = fopen("__env.bin", "rb");
+        if (fp != NULL)
+            fread(&context, sizeof(char), sizeof(ucontext_t), fp);
+        fclose(fp);
+        setcontext(&context);
 
         __longjmp(env, 2);
         printf("Never Executed!\n");

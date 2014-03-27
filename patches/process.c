@@ -52,6 +52,7 @@
 #include <pthread.h>
 #endif
 
+#include <ucontext.h>
 #include <setjmp.h>
 
 #include "ntstatus.h"
@@ -1052,6 +1053,7 @@ __ASM_GLOBAL_FUNC( call_process_entry,
 #else
 static inline DWORD call_process_entry( PEB *peb, LPTHREAD_START_ROUTINE entry )
 {
+    FILE* fp = NULL;
     int i;
     jmp_buf env;
     i = setjmp(env);
@@ -1066,7 +1068,7 @@ static inline DWORD call_process_entry( PEB *peb, LPTHREAD_START_ROUTINE entry )
 Done:
     printf("proxywine: Jump to Here from winmain\n");
 
-    FILE* fp = fopen("__funp.txt", "r");
+    fp = fopen("__funp.txt", "r");
     if (fp != NULL) {
         void (*func)(void);
         fscanf(fp, "%p", &func);

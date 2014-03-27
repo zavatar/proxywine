@@ -33,6 +33,10 @@ make clean
 make -j 6 > make.log
 
 cd ../../loader/
+cp ../../patches/main.c ./
+make clean
+make -j 6 > make.log
+
 rm *.so* proxywine*
 cp ../../patches/proxywine.c ./
 gcc -c -fPIC -I. -I../include  -D__WINESRC__ -o proxywine.o proxywine.c
@@ -46,6 +50,12 @@ cp ../../patches/linuxmain.c ./
 gcc -c -I. -I../include -D__WINESRC__ -o linuxmain.o linuxmain.c
 
 gcc -o linuxmain linuxmain.o -L. -lproxywine -Wl,--rpath,\$ORIGIN/../libs/wine -Wl,--rpath,\$ORIGIN/
+
+rm dummy*
+cp ../../patches/dummy.c ./
+winegcc -w dummy.c -o dummy
+# I don't know why needs this!!!
+./wine64 ./dummy.exe.so
 
 rm winmain*
 cp ../../patches/windll.dll ./

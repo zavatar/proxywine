@@ -38,7 +38,6 @@
 #endif
 #include <pthread.h>
 
-#include <ucontext.h>
 #include <setjmp.h>
 
 #include "wine/library.h"
@@ -205,27 +204,16 @@ static int pre_exec(void)
 
 #endif
 
-int I = 0;
 
 /**********************************************************************
  *           main
  */
-int expmain( int argc, char *argv[] )
+int main( int argc, char *argv[] )
 {
-    ucontext_t context;
-    getcontext(&context);
-    if (I >= 1) return I;
-    else I++;
-    
-    FILE* fp = fopen("__env.bin", "wb");
-    if (fp != NULL)
-        fwrite(&context, sizeof(char), sizeof(ucontext_t), fp);
-    fclose(fp);
-
     char error[1024];
     int i;
 
-	int proxyargc = argc + 2;
+    int proxyargc = argc + 2;
 	char **proxyargv = (char**)(malloc(proxyargc*sizeof(char*)));
 	int *offset = (int*)(malloc((proxyargc+1)*sizeof(int)));
 	int L = 0;
@@ -269,7 +257,6 @@ int expmain( int argc, char *argv[] )
     }
 
     wine_init( proxyargc, proxyargv, error, sizeof(error) );
-
     fprintf( stderr, "wine: failed to initialize: %s\n", error );
     exit(1);
 }
